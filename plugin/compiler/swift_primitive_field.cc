@@ -54,7 +54,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
                 case FieldDescriptor::TYPE_DOUBLE  : return "Double" ;
                 case FieldDescriptor::TYPE_BOOL    : return "Bool"    ;
                 case FieldDescriptor::TYPE_STRING  : return "String";
-                case FieldDescriptor::TYPE_BYTES   : return "NSData"  ;
+                case FieldDescriptor::TYPE_BYTES   : return "Data"  ;
                 default                            : return NULL;
             }
             
@@ -209,7 +209,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
                        "         builderResult.$name$ = value\n"
                        "     }\n"
                        "}\n"
-                       "$acontrol$func set$capitalized_name$(_ value:$storage_type$) -> $containing_class$.Builder {\n"
+                       "$acontrol$func set$capitalized_name$(value:$storage_type$) -> $containing_class$.Builder {\n"
                        "  self.$name$ = value\n"
                        "  return self\n"
                        "}\n"
@@ -240,14 +240,14 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
     void PrimitiveFieldGenerator::GenerateSerializationCodeSource(io::Printer* printer) const {
         printer->Print(variables_,
                        "if has$capitalized_name$ {\n"
-                       "  try output.write$capitalized_type$($number$, value:$name$)\n"
+                       "  try output.write$capitalized_type$(fieldNumber:$number$, value:$name$)\n"
                        "}\n");
     }
     
     void PrimitiveFieldGenerator::GenerateSerializedSizeCodeSource(io::Printer* printer) const {
         printer->Print(variables_,
                        "if has$capitalized_name$ {\n"
-                       "  serialize_size += $name$.compute$capitalized_type$Size($number$)\n"
+                       "  serialize_size += $name$.compute$capitalized_type$Size(fieldNumber: $number$)\n"
                        "}\n");
     }
     
@@ -322,7 +322,7 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
                        "         builderResult.$name$ = array\n"
                        "     }\n"
                        "}\n"
-                       "$acontrol$func set$capitalized_name$(_ value:Array<$storage_type$>) -> $containing_class$.Builder {\n"
+                       "$acontrol$func set$capitalized_name$(value:Array<$storage_type$>) -> $containing_class$.Builder {\n"
                        "  self.$name$ = value\n"
                        "  return self\n"
                        "}\n"
@@ -349,11 +349,11 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         {
             printer->Print(variables_,
                            "let length:Int32 = try input.readRawVarint32()\n"
-                           "let limit:Int32 = try input.pushLimit(length)\n"
+                           "let limit:Int32 = try input.pushLimit(byteLimit: length)\n"
                            "while (input.bytesUntilLimit() > 0) {\n"
                            "  builderResult.$name$ += [try input.read$capitalized_type$()]\n"
                            "}\n"
-                           "input.popLimit(limit)\n");
+                           "input.popLimit(oldLimit: limit)\n");
         }
         else
         {
@@ -370,15 +370,15 @@ namespace google { namespace protobuf { namespace compiler { namespace swift {
         
         if (descriptor_->options().packed()) {
             printer->Print(variables_,
-                           "try output.writeRawVarint32($tag$)\n"
-                           "try output.writeRawVarint32($name$MemoizedSerializedSize)\n"
+                           "try output.writeRawVarint32(value:$tag$)\n"
+                           "try output.writeRawVarint32(value:$name$MemoizedSerializedSize)\n"
                            "for oneValue$name$ in $name$ {\n"
-                           "  try output.write$capitalized_type$NoTag(oneValue$name$)\n"
+                           "  try output.write$capitalized_type$NoTag(value:oneValue$name$)\n"
                            "}\n");
         } else {
             printer->Print(variables_,
                            "for oneValue$name$ in $name$ {\n"
-                           "  try output.write$capitalized_type$($number$, value:oneValue$name$)\n"
+                           "  try output.write$capitalized_type$(fieldNumber:$number$, value:oneValue$name$)\n"
                            "}\n");
         }
         printer->Outdent();

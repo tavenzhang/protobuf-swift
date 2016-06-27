@@ -16,41 +16,33 @@
 // limitations under the License.
 
 import Foundation
-internal class RingBuffer
-{
-    internal var buffer:NSMutableData
+internal class RingBuffer {
+    internal var buffer:Data
     var position:Int32 = 0
     var tail:Int32 = 0
     
-    init(data:NSMutableData)
-    {
-        buffer = NSMutableData(data: data)
+    init(data:Data) {
+        buffer = Data(data: data)
     }
-    func freeSpace() ->UInt32
-    {
+    func freeSpace() -> UInt32 {
         var res:UInt32 = 0
         
-        if position < tail
-        {
+        if position < tail {
             res = UInt32(tail - position)
         }
-        else
-        {
-            let dataLength = buffer.length
+        else {
+            let dataLength = buffer.count
             res = UInt32((Int32(dataLength) - position) + tail)
         }
         
-        if tail != 0
-        {
+        if tail != 0 {
             res -=  1
         }
         return res
     }
     
-    func appendByte(byte aByte:UInt8) -> Bool
-    {
-        if freeSpace() < 1
-        {
+    func appendByte(byte aByte:UInt8) -> Bool {
+        if freeSpace() < 1 {
             return false
         }
         let pointer = UnsafeMutablePointer<UInt8>(buffer.mutableBytes)
@@ -60,15 +52,13 @@ internal class RingBuffer
         return true
     }
     
-    func appendData(_ input:NSData, offset:Int32, length:Int32) -> Int32
-    {
+    func appendData(input:Data, offset:Int32, length:Int32) -> Int32 {
         var totalWritten:Int32 = 0
         var aLength = length
         var aOffset = offset
-        if (position >= tail)
-        {
-            totalWritten = min(Int32(buffer.length) - Int32(position), Int32(aLength))
-            memcpy(buffer.mutableBytes + Int(position), input.bytes + Int(aOffset), Int(totalWritten))
+        if (position >= tail) {
+            totalWritten = min(Int32(buffer.count) - Int32(position), Int32(aLength))
+            memcpy(buffer.mutableBytes + Int(position), (input as NSData).bytes + Int(aOffset), Int(totalWritten))
             position += totalWritten
             if totalWritten == aLength
             {
@@ -81,40 +71,36 @@ internal class RingBuffer
         
         let freeSpaces:UInt32 = freeSpace()
         
-        if freeSpaces == 0
-        {
+        if freeSpaces == 0 {
             return totalWritten
         }
         
-        if (position == Int32(buffer.length)) {
+        if (position == Int32(buffer.count)) {
             position = 0
         }
         
         let written:Int32 = min(Int32(freeSpaces), aLength)
-        memcpy(buffer.mutableBytes + Int(position), input.bytes + Int(aOffset), Int(written))
+        memcpy(buffer.mutableBytes + Int(position), (input as NSData).bytes + Int(aOffset), Int(written))
         position += written
         totalWritten += written
         
         return totalWritten
     }
     
-    func flushToOutputStream(_ stream:NSOutputStream) ->Int32
-    {
+    func flushToOutputStream(stream:OutputStream) ->Int32 {
         var totalWritten:Int32 = 0
         
         let data = buffer
         let pointer = UnsafeMutablePointer<UInt8>(data.mutableBytes)
-        if tail > position
-        {
+        if tail > position {
             
             let written:Int = stream.write(pointer + Int(tail), maxLength:Int(buffer.length - Int(tail)))
-            if written <= 0
-            {
+            if written <= 0 {
                 return totalWritten
             }
             totalWritten+=Int32(written)
             tail += Int32(written)
-            if (tail == Int32(buffer.length)) {
+            if (tail == Int32(buffer.count)) {
                 tail = 0
             }
         }
@@ -135,11 +121,11 @@ internal class RingBuffer
             position = 0
         }
         
-        if (position == Int32(buffer.length) && tail > 0) {
+        if (position == Int32(buffer.count) && tail > 0) {
             position = 0
         }
         
-        if (tail == Int32(buffer.length)) {
+        if (tail == Int32(buffer.count)) {
             tail = 0
         }
         

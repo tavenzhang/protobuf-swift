@@ -19,12 +19,12 @@ import Foundation
 
 public protocol GeneratedMessageProtocol: class, Message
 {
-    static func parseFromData(_ data:NSData) throws -> Self
-    static func parseFromData(_ data:NSData, extensionRegistry:ExtensionRegistry) throws -> Self
-    static func parseFromInputStream(_ input:NSInputStream) throws -> Self
-    static func parseFromInputStream(_ input:NSInputStream, extensionRegistry:ExtensionRegistry) throws -> Self
-    static func parseFromCodedInputStream(_ input:CodedInputStream) throws -> Self
-    static func parseFromCodedInputStream(_ input:CodedInputStream, extensionRegistry:ExtensionRegistry) throws -> Self
+    static func parseFromData(data:Data) throws -> Self
+    static func parseFromData(data:Data, extensionRegistry:ExtensionRegistry) throws -> Self
+    static func parseFromInputStream(input:InputStream) throws -> Self
+    static func parseFromInputStream(input:InputStream, extensionRegistry:ExtensionRegistry) throws -> Self
+    static func parseFromCodedInputStream(input:CodedInputStream) throws -> Self
+    static func parseFromCodedInputStream(input:CodedInputStream, extensionRegistry:ExtensionRegistry) throws -> Self
 }
 
 public class GeneratedMessage:AbstractMessage
@@ -108,14 +108,14 @@ public class GeneratedMessageBuilder:AbstractMessageBuilder
         return internalGetResult.isInitialized()
     }
     
-    override public func mergeUnknownFields(_ unknownFields: UnknownFieldSet) throws -> Self
+    override public func mergeUnknownFields(unknownField: UnknownFieldSet) throws -> Self
     {
         let result:GeneratedMessage = internalGetResult
-        result.unknownFields = try UnknownFieldSet.builderWithUnknownFields(result.unknownFields).mergeUnknownFields(unknownFields).build()
+        result.unknownFields = try UnknownFieldSet.builderWithUnknownFields(copyFrom: result.unknownFields).mergeUnknownFields(other: unknownFields).build()
         return self
     }
-    public func parseUnknownField(_ input:CodedInputStream ,unknownFields:UnknownFieldSet.Builder, extensionRegistry:ExtensionRegistry, tag:Int32) throws -> Bool {
-        return try unknownFields.mergeFieldFrom(tag, input:input)
+    public func parseUnknownField(input:CodedInputStream ,unknownFields:UnknownFieldSet.Builder, extensionRegistry:ExtensionRegistry, tag:Int32) throws -> Bool {
+        return try unknownFields.mergeFieldFrom(tag: tag, input:input)
     }
 }
 
@@ -132,7 +132,7 @@ extension GeneratedMessage:CustomStringConvertible
     public var description:String {
         get {
             var output:String = ""
-            output += try! getDescription("")
+            output += try! getDescription(indent: "")
             return output
         }
     }
