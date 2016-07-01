@@ -90,7 +90,7 @@ public class GeneratedMessageBuilder:AbstractMessageBuilder
         
         guard result.isInitialized() else
         {
-            throw ProtocolBuffersError.InvalidProtocolBuffer("Uninitialized Message")
+            throw ProtocolBuffersError.invalidProtocolBuffer("Uninitialized Message")
         }
     }
     
@@ -99,7 +99,7 @@ public class GeneratedMessageBuilder:AbstractMessageBuilder
         let result = internalGetResult
         guard result.isInitialized() else
         {
-            throw ProtocolBuffersError.InvalidProtocolBuffer("Uninitialized Message")
+            throw ProtocolBuffersError.invalidProtocolBuffer("Uninitialized Message")
         }
     }
     

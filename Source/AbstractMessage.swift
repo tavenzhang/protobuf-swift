@@ -25,12 +25,12 @@ public protocol MessageInit:class {
 }
 
 public enum ProtocolBuffersError: ErrorProtocol {
-    case Obvious(String)
+    case obvious(String)
     //Streams
-    case InvalidProtocolBuffer(String)
-    case IllegalState(String)
-    case IllegalArgument(String)
-    case OutOfSpace
+    case invalidProtocolBuffer(String)
+    case illegalState(String)
+    case illegalArgument(String)
+    case outOfSpace
 }
 
 public protocol Message:class,MessageInit {
@@ -89,11 +89,11 @@ public class AbstractMessage:Hashable, Message {
     }
     
     public func getDescription(indent:String) throws -> String {
-        throw ProtocolBuffersError.Obvious("Override")
+        throw ProtocolBuffersError.obvious("Override")
     }
     
     public func writeToCodedOutputStream(output: CodedOutputStream) throws {
-        throw ProtocolBuffersError.Obvious("Override")
+        throw ProtocolBuffersError.obvious("Override")
     }
     
     public func writeToOutputStream(output: OutputStream) throws {
@@ -151,11 +151,11 @@ public class AbstractMessageBuilder:MessageBuilder {
     }
     
     public func mergeFromCodedInputStream(input:CodedInputStream) throws ->  Self {
-        return try mergeFromCodedInputStream(input: input, extensionRegistry:ExtensionRegistry())
+        return try mergeFromCodedInputStream(input, extensionRegistry:ExtensionRegistry())
     }
     
     public func mergeFromCodedInputStream(input:CodedInputStream, extensionRegistry:ExtensionRegistry) throws ->  Self {
-        throw ProtocolBuffersError.Obvious("Override")
+        throw ProtocolBuffersError.obvious("Override")
     }
     
     public func mergeUnknownFields(unknownField: UnknownFieldSet) throws ->  Self {
@@ -166,7 +166,7 @@ public class AbstractMessageBuilder:MessageBuilder {
     
     public func mergeFromData(data:Data) throws ->  Self {
         let input:CodedInputStream = CodedInputStream(data:data)
-        try mergeFromCodedInputStream(input: input)
+        try mergeFromCodedInputStream(input)
         try input.checkLastTagWas(value: 0)
         return self
     }
@@ -174,14 +174,14 @@ public class AbstractMessageBuilder:MessageBuilder {
     
     public func mergeFromData(data:Data, extensionRegistry:ExtensionRegistry) throws ->  Self {
         let input:CodedInputStream = CodedInputStream(data:data)
-        try mergeFromCodedInputStream(input: input, extensionRegistry:extensionRegistry)
+        try mergeFromCodedInputStream(input, extensionRegistry:extensionRegistry)
         try input.checkLastTagWas(value: 0)
         return self
     }
     
     public func mergeFromInputStream(input: InputStream) throws -> Self {
         let codedInput:CodedInputStream = CodedInputStream(data: input)
-        try mergeFromCodedInputStream(input: codedInput)
+        try mergeFromCodedInputStream(codedInput)
         try codedInput.checkLastTagWas(value: 0)
         return self
         
@@ -189,7 +189,7 @@ public class AbstractMessageBuilder:MessageBuilder {
     }
     public func mergeFromInputStream(input: InputStream, extensionRegistry:ExtensionRegistry) throws -> Self {
         let codedInput:CodedInputStream = CodedInputStream(data: input)
-        try mergeFromCodedInputStream(input: codedInput, extensionRegistry:extensionRegistry)
+        try mergeFromCodedInputStream(codedInput, extensionRegistry:extensionRegistry)
         try codedInput.checkLastTagWas(value: 0)
         return self
     }
@@ -204,7 +204,7 @@ public class AbstractMessageBuilder:MessageBuilder {
         let data  = NSMutableData(length: Int(rSize))
         let pointer = UnsafeMutablePointer<UInt8>(data!.mutableBytes)
         input.read(pointer, maxLength: Int(rSize))
-        return  try mergeFromData(data!)
+        return  try mergeFromData(data! as Data)
     }
 
 }

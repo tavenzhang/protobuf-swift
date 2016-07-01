@@ -79,7 +79,7 @@ public class ExtendableMessage : GeneratedMessage
     
     public func extensionsAreInitialized() -> Bool {
         let arr = Array(extensionMap.values)
-        return isInitialized(arr)
+        return isInitialized(object:arr)
     }
     
     internal func ensureExtensionIsRegistered(extensions:ConcreateExtensionField)
@@ -302,7 +302,7 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         let result = internalGetResult
         if (!result.isInitialized())
         {
-            throw ProtocolBuffersError.InvalidProtocolBuffer("Uninitialized Message")
+            throw ProtocolBuffersError.invalidProtocolBuffer("Uninitialized Message")
         }
     }
     
@@ -311,7 +311,7 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         let result = internalGetResult
         if (!result.isInitialized())
         {
-            throw ProtocolBuffersError.InvalidProtocolBuffer("Uninitialized Message")
+            throw ProtocolBuffersError.invalidProtocolBuffer("Uninitialized Message")
         }
     }
     
@@ -323,7 +323,7 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
     override public func mergeUnknownFields(unknownField: UnknownFieldSet) throws -> Self
     {
         let result:GeneratedMessage = internalGetResult
-        result.unknownFields = try UnknownFieldSet.builderWithUnknownFields(copyFrom: result.unknownFields).mergeUnknownFields(other: unknownFields).build()
+        result.unknownFields = try UnknownFieldSet.builderWithUnknownFields(copyFrom: result.unknownFields).mergeUnknownFields(other: unknownField).build()
         return self
     }
     
@@ -355,7 +355,7 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         let message = internalGetResult
         message.ensureExtensionIsRegistered(extensions: extensions)
         guard !extensions.isRepeated  else {
-            throw ProtocolBuffersError.IllegalArgument("Must call addExtension() for repeated types.")
+            throw ProtocolBuffersError.illegalArgument("Must call addExtension() for repeated types.")
         }
         message.extensionMap[extensions.fieldNumber] = value
         return self
@@ -368,7 +368,7 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         
         guard extensions.isRepeated else
         {
-            throw ProtocolBuffersError.IllegalArgument("Must call addExtension() for repeated types.")
+            throw ProtocolBuffersError.illegalArgument("Must call addExtension() for repeated types.")
         }        
         let fieldNumber = extensions.fieldNumber
         if let val = value as? GeneratedMessage
@@ -391,7 +391,7 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
         let message = internalGetResult
         message.ensureExtensionIsRegistered(extensions: extensions)
         guard extensions.isRepeated else {
-            throw ProtocolBuffersError.IllegalArgument("Must call setExtension() for singular types.")
+            throw ProtocolBuffersError.illegalArgument("Must call setExtension() for singular types.")
         }
         let fieldNumber = extensions.fieldNumber
         if let val = value as? GeneratedMessage
@@ -428,7 +428,7 @@ public class ExtendableMessageBuilder:GeneratedMessageBuilder
     public func mergeExtensionFields(other:ExtendableMessage) throws {
         let thisMessage = internalGetResult
         guard thisMessage.className() == other.className() else {
-            throw ProtocolBuffersError.IllegalArgument("Cannot merge extensions from a different type")
+            throw ProtocolBuffersError.illegalArgument("Cannot merge extensions from a different type")
         }
         if other.extensionMap.count > 0 {
             var registry = other.extensionRegistry

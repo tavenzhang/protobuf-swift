@@ -313,7 +313,7 @@ public class UnknownFieldSet:Hashable,Equatable {
         
         public func mergeFromData(data:Data, extensionRegistry:ExtensionRegistry) throws -> UnknownFieldSet.Builder {
             let input = CodedInputStream(data: data)
-            _ = try mergeFromCodedInputStream(input: input, extensionRegistry:extensionRegistry)
+            = try mergeFromCodedInputStream(input:input, extensionRegistry:extensionRegistry)
             try input.checkLastTagWas(value: 0)
             return self
         }

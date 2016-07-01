@@ -227,7 +227,7 @@ messageOrGroupClass:Any.Type,
             try output.writeMessage(fieldNumber: fieldNumber, value:downCastValue)
         
         default:
-             throw ProtocolBuffersError.InvalidProtocolBuffer("Invalid Extensions Type")
+             throw ProtocolBuffersError.invalidProtocolBuffer("Invalid Extensions Type")
         }
     }
     
@@ -481,7 +481,7 @@ messageOrGroupClass:Any.Type,
             output += try values.getDescription(indent: indent)
         }
         else {
-            throw ProtocolBuffersError.InvalidProtocolBuffer("Invalid Extensions Type")
+            throw ProtocolBuffersError.invalidProtocolBuffer("Invalid Extensions Type")
         }
         return output
     }
@@ -675,7 +675,7 @@ messageOrGroupClass:Any.Type,
     
     func mergeMessageSetExtentionFromCodedInputStream(input:CodedInputStream, unknownFields:UnknownFieldSet.Builder) throws
     {
-         throw ProtocolBuffersError.IllegalState("Method Not Supported")
+         throw ProtocolBuffersError.illegalState("Method Not Supported")
     }
     
     func readSingleValueFromCodedInputStream(input:CodedInputStream, extensionRegistry:ExtensionRegistry) throws -> Any

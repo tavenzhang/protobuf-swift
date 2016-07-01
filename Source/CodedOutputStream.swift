@@ -25,28 +25,28 @@ public class CodedOutputStream {
     
     public init (output aOutput:OutputStream!, data:NSMutableData) {
         output = aOutput
-        buffer = RingBuffer(data:data)
+        buffer = RingBuffer(data:data as Data)
     }
   
     public init(output aOutput:OutputStream!, bufferSize:Int32) {
         let data = NSMutableData(length: Int(bufferSize))!
         output = aOutput
-        buffer = RingBuffer(data: data)
+        buffer = RingBuffer(data: data as Data)
     }
    
     public init(output:OutputStream) {
         let data = NSMutableData(length: Int(DEFAULT_BUFFER_SIZE))!
         self.output = output
-        buffer = RingBuffer(data: data)
+        buffer = RingBuffer(data: data as Data)
     }
     
     public init(data aData:NSMutableData) {
-        buffer = RingBuffer(data: aData)
+        buffer = RingBuffer(data: aData as Data)
     }
     
     public func flush() throws {
         guard let output = output else {
-            throw ProtocolBuffersError.OutOfSpace
+            throw ProtocolBuffersError.outOfSpace
         }
         _ = buffer.flushToOutputStream(stream: output)
     }
@@ -276,7 +276,7 @@ public class CodedOutputStream {
     public func writeRawMessageSetExtension(fieldNumber:Int32, value:Data) throws {
         try writeTag(fieldNumber: WireFormatMessage.setItem.rawValue, format:WireFormat.startGroup)
         try writeUInt32(fieldNumber: WireFormatMessage.setTypeId.rawValue, value:UInt32(fieldNumber))
-        try writeData( fieldNumber: WireFormatMessage.setMessage.rawValue, value: value)
+        try writeData(fieldNumber: WireFormatMessage.setMessage.rawValue, value: value)
         try writeTag(fieldNumber: WireFormatMessage.setItem.rawValue, format:WireFormat.endGroup)
     }
     
